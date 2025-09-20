@@ -1,0 +1,13 @@
+/* 
+path: assets/styles/_image.scss
+description: Helpful styles for working with images.
+*/
+
+@mixin prevent-manipulations {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  pointer-events: none;
+}
