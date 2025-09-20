@@ -1,10 +1,11 @@
 <template>
-    <div class="wrapper">
+    <div :class="`wrapper ${isFocused ? 'focused' : ''}`">
         <TextInput :type="InputDataTypes.Text"
                     v-model:data="expression"
                     :required="false"
                     placeholder="Search classroom"
-                    :message="false" />
+                    :message="false"
+                    @focus-change="isFocused = $event" />
     </div>
 </template>
 
@@ -18,6 +19,7 @@ export default defineComponent({
     data() {
         return({
             expression: ref(""),
+            isFocused: false,
             InputDataTypes,
         });
     },
@@ -33,6 +35,10 @@ export default defineComponent({
 
 .wrapper {
     width: 180px;
+    
+    &.focused {
+        // width: 100%;
+    }
 }
 
 </style>

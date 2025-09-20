@@ -7,7 +7,7 @@
         :class="`${isFocused ? 'focused' : ''} ${errorMessage !== '' ? 'error' : ''}`"
         :maxlength="maxLength"
         @input="handleInput"
-        @focus="isFocused = true"
+        @focus="handleFocus"
         @blur="handleBlur"
       />
 
@@ -66,7 +66,7 @@
         default: true,
       },
     },
-    emits: ['update:data'],
+    emits: ['update:data', 'focus-change'],
     methods: {
       handleInput(event: Event) {
         const target = event.target as HTMLInputElement | null;
@@ -74,6 +74,10 @@
           const value = target.value;
           this.$emit('update:data', value);
         }
+      },
+      handleFocus(event: Event) {
+        this.isFocused = true;
+        this.$emit('focus-change', true);
       },
       handleBlur(event: Event) {
         this.isFocused = false;
