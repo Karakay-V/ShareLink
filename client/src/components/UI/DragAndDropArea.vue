@@ -9,6 +9,7 @@
     <input
       type="file"
       name="file"
+      multiple
       id="fileInput"
       class="hidden-input"
       @change="onChange"
@@ -17,7 +18,11 @@
     />
 
     <div class="info-overlay">
-        <Button v-if="files.length === 0" label="Add File" width="150px" height="35px" />
+        <Button v-if="files.length === 0" 
+                label="Add File" 
+                width="150px" 
+                height="35px"
+                @click="openFileDialog" />
 
         <label v-if="files.length === 0" for="fileInput" class="file-label">
             <div v-if="isDragging">Release to drop file here</div>
@@ -28,9 +33,13 @@
         <ul v-else class="file-list">
             <li v-for="(file, index) in files" :key="index">
                 <div    class="file-wrapper"
-                        @click="removeFile(index)"
-                >
+                        @click="removeFile(index)">
+                    <div class="remove-wrapper">
+                      <img class="remove-icon" :src="ClosePic" alt="Remove" />
+                    </div>
+                    
                     <img class="file-icon" :src="FilePic" :alt="file.type" />
+                    
                     <span class="file-name">{{ file.name }}</span>
                 </div>
             </li>
@@ -65,15 +74,17 @@ export default defineComponent({
         height: {
             type: String,
             required: false,
-            default: "180px",
+            default: "max-content",
         },
     },
     methods: {
         onChange() {
-            const input = this.$refs.file as HTMLInputElement;
-            if (input && input.files && input.files[0]) {
-            this.files = [input.files[0]]; // replace instead of push (single file)
-            }
+           const input = this.$refs.file as HTMLInputElement;
+          if (input && input.files) {
+              const selected = Array.from(input.files);
+              this.files = [...this.files, ...selected].slice(0, 5);
+              input.value = "";
+          }
         },
         dragover(e: DragEvent) {
             e.preventDefault();
@@ -84,8 +95,9 @@ export default defineComponent({
         },
         drop(e: DragEvent) {
             e.preventDefault();
-            if (e.dataTransfer?.files && e.dataTransfer.files[0]) {
-                this.files = [e.dataTransfer.files[0]]; // replace
+            if (e.dataTransfer?.files) {
+                const dropped = Array.from(e.dataTransfer.files);
+                this.files = [...this.files, ...dropped].slice(0, 5);
             }
             this.isDragging = false;
         },
@@ -93,6 +105,10 @@ export default defineComponent({
             this.files.splice(index, 1);
             const input = this.$refs.file as HTMLInputElement;
             if (input) input.value = ""; // clear input value
+        },
+        openFileDialog() {
+            const input = this.$refs.file as HTMLInputElement;
+            input?.click();
         },
     },
 });
@@ -111,12 +127,15 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: 140px;
+  padding: 20px 20px;
   transition: 0.3s ease background-color, 0.3s ease box-shadow,
-    0.3s ease color, 0.3s ease border-color;
+    0.3s ease color, 0.3s ease border-color, 0.3s ease transform;
 
   &.dragging {
     background-color: $background-gray;
     border-color: $border-orange;
+    transform: scale(1.025);
 
     .file-label {
       color: $text-orange;
@@ -138,6 +157,7 @@ export default defineComponent({
     flex-direction: column;
     align-items: center;
     gap: 15px;
+    z-index: 2;
 
     .file-label {
       pointer-events: none;
@@ -154,7 +174,11 @@ export default defineComponent({
       padding: 0;
       margin: 0;
       width: 100%;
-      max-width: 300px;
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 10px 20px;
+      flex-wrap: wrap;
 
       li {
          .file-wrapper {
@@ -166,7 +190,39 @@ export default defineComponent({
             align-items: center;
             justify-content: space-between;
             padding: 4px 6px;
-            z-index: 2;
+            cursor: pointer;
+            position: relative;
+            transition: ease 0.3s all;
+            width: 110px;
+            height: 100px;
+
+            &:hover {
+                background-color: $background-gray;
+                border-color: $border-danger;
+                transform: scale(1.025);
+
+                .remove-wrapper {
+                    opacity: 1;
+                }
+            }
+
+            .remove-wrapper {
+                transition: ease 0.3s opacity;
+                opacity: 0;
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                
+                .remove-icon {
+                    width: 70%;
+                    height: 70%;
+                }
+            }
 
             .file-icon {
                 width: 70px;
@@ -176,6 +232,7 @@ export default defineComponent({
                 @include fonts.noto-font(600);
                 @include fonts.responsive-font(13, 13, 1440);
                 @include fonts.prevent-selecting;
+                @include fonts.hide-overflowed-text;
                 color: $text-gray;
                 text-align: center;
             }
