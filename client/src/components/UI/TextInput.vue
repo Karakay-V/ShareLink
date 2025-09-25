@@ -65,6 +65,16 @@
         required: false,
         default: true,
       },
+      width: {
+        type: String,
+        required: false,
+        default: "100%",
+      },
+      height: {
+        type: String,
+        required: false,
+        default: "max-content",
+      },
     },
     emits: ['update:data', 'focus-change'],
     methods: {
@@ -157,12 +167,12 @@
     input {
       // Minus 44px for paddings and 4px for borders
       width: calc(100% - 44px - 4px);
-      padding: 12px 15px;
+      padding: 15px;
       border-radius: 50px;
       border: 2px solid transparent;
       @include noto-font(400);
       @include shadows.box-shadow-medium;
-      @include responsive-font(13, 13, 1440);
+      @include responsive-font(15, 13, 1440);
       transition: 0.3s ease background-color, 0.3s ease box-shadow, 0.3s ease color, 0.3s ease border-color;
       background-color: $background-white;
       color: $text-black;

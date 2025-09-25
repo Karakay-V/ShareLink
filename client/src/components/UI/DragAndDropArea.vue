@@ -1,7 +1,7 @@
 <template>
+  <!-- :style="{ width: width, height: height }" -->
   <div
     :class="`dropzone-wrapper ${isDragging ? 'dragging' : ''}`"
-    :style="{ width: width, height: height }"
     @dragover="dragover"
     @dragleave="dragleave"
     @drop="drop"
@@ -128,6 +128,7 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   min-height: 140px;
+  width: calc(100% - 20px - 20px);
   padding: 20px 20px;
   transition: 0.3s ease background-color, 0.3s ease box-shadow,
     0.3s ease color, 0.3s ease border-color, 0.3s ease transform;
