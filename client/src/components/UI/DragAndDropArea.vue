@@ -86,17 +86,17 @@ export default defineComponent({
               input.value = "";
           }
         },
-        dragover(e: DragEvent) {
-            e.preventDefault();
+        dragover(_event: DragEvent) {
+            _event.preventDefault();
             this.isDragging = true;
         },
         dragleave() {
             this.isDragging = false;
         },
-        drop(e: DragEvent) {
-            e.preventDefault();
-            if (e.dataTransfer?.files) {
-                const dropped = Array.from(e.dataTransfer.files);
+        drop(_event: DragEvent) {
+            _event.preventDefault();
+            if (_event.dataTransfer?.files) {
+                const dropped = Array.from(_event.dataTransfer.files);
                 this.files = [...this.files, ...dropped].slice(0, 5);
             }
             this.isDragging = false;

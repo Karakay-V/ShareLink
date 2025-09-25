@@ -78,20 +78,20 @@
     },
     emits: ['update:data', 'focus-change'],
     methods: {
-      handleInput(event: Event) {
-        const target = event.target as HTMLInputElement | null;
+      handleInput(_event: Event) {
+        const target = _event.target as HTMLInputElement | null;
         if (target) {
           const value = target.value;
           this.$emit('update:data', value);
         }
       },
-      handleFocus(event: Event) {
+      handleFocus(_event: Event) {
         this.isFocused = true;
         this.$emit('focus-change', true);
       },
-      handleBlur(event: Event) {
+      handleBlur(_event: Event) {
         this.isFocused = false;
-        const target = event.target as HTMLInputElement;
+        const target = _event.target as HTMLInputElement;
         this.validateInput(target.value);
       },
       validateInput(value: string) {
