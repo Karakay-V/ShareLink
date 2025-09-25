@@ -1,5 +1,5 @@
 <template>
-    <div :class="`wrapper ${ isFocused ? 'focused' : '' }`" 
+    <button :class="`wrapper ${ isFocused ? 'focused' : '' }`" 
         :style="{ width: width, height: height, }"
         @mouseenter="isFocused = true"
         @mouseleave="isFocused = false"
@@ -7,7 +7,7 @@
         <div>
             <p class="label">{{ label }}</p>
         </div>
-    </div>
+    </button>
 </template>
 
 <script lang="ts">
