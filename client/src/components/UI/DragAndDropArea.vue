@@ -9,12 +9,11 @@
     <input
       type="file"
       name="file"
-      multiple
       id="fileInput"
       class="hidden-input"
       @change="onChange"
       ref="file"
-      accept=".pdf,.jpg,.jpeg,.png"
+      accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
     />
 
     <div class="info-overlay">

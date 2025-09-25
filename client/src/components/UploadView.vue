@@ -25,7 +25,8 @@
             <DragAndDropArea />
             
             <Button label="Submit File"
-                    class="internal-button" />
+                    class="internal-button"
+                    @click="handleSubmit" />
 
         </Section>
     </div>
@@ -38,6 +39,7 @@ import DragAndDropArea from './UI/DragAndDropArea.vue';
 import Button from './UI/Button.vue';
 import TextInput from './UI/TextInput.vue';
 import { InputDataTypes } from '../types/input-data-types';
+import { uploadFile } from "../services/upload-service";
 
 export default defineComponent({
     name: "UploadView",
@@ -46,6 +48,7 @@ export default defineComponent({
             InputDataTypes,
             email: '',
             signature: '',
+            file: null as File | null,
         });
     },
     props: {
@@ -56,6 +59,24 @@ export default defineComponent({
         classroom: {
             type: String,
             required: true,
+        },
+    },
+    methods: {
+        async handleSubmit() {
+        try {
+            const res = await uploadFile({
+            email: this.email,
+            signature: this.signature,
+            lesson: this.lesson,
+            classroom: this.classroom,
+            file: this.file ?? undefined,
+            });
+            console.log("Upload success:", res.data);
+            alert("File submitted successfully!");
+        } catch (err) {
+            console.error("Upload error:", err);
+            alert("Failed to submit file.");
+        }
         },
     },
     components: {
