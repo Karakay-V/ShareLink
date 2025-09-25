@@ -17,6 +17,6 @@ func main() {
 	http.HandleFunc("/lessons", handlers.GetLessons)
 	http.HandleFunc("/presentations", handlers.HandlePresentations)
 
-	log.Println("Server started at :8001")
-	log.Fatal(http.ListenAndServe(":8001", nil))
+	log.Println("Server started at :8002")
+	log.Fatal(http.ListenAndServe(":8002", nil))
 }
