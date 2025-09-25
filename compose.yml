@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  server:
+    build:
+      context: ./server
+    container_name: sharelink-server
+    ports:
+      - "8002:8002"
+    volumes:
+      - db_data:/app/data  # SQLite база
+    environment:
+      - CGO_ENABLED=1
+    command: ./server
+    networks:
+      - sharelink-network
+
+  client:
+    build:
+      context: ./client
+    container_name: sharelink-client
+    ports:
+      - "8001:8080"
+    depends_on:
+      - server
+    networks:
+      - sharelink-network
+
+volumes:
+  db_data:
+
+networks:
+  sharelink-network:
+    driver: bridge
