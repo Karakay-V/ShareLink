@@ -8,6 +8,7 @@ import (
 	"github.com/Karakay-V/ShareLink/server/db"
 	"github.com/Karakay-V/ShareLink/server/handlers"
 	"github.com/Karakay-V/ShareLink/server/middleware"
+	"github.com/Karakay-V/ShareLink/server/services"
 )
 
 // CORS middleware
@@ -32,6 +33,8 @@ func main() {
 
 	db.InitDB()
 	defer db.DB.Close()
+
+	services.StartOutdateMarkerService()
 
 	mux := http.NewServeMux()
 
