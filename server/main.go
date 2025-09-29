@@ -4,8 +4,10 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Karakay-V/ShareLink/server/config"
 	"github.com/Karakay-V/ShareLink/server/db"
 	"github.com/Karakay-V/ShareLink/server/handlers"
+	"github.com/Karakay-V/ShareLink/server/middleware"
 )
 
 // CORS middleware
@@ -25,6 +27,9 @@ func corsMiddleware(next http.Handler) http.Handler {
 }
 
 func main() {
+	// init configs
+	config.InitConfig()
+
 	db.InitDB()
 	defer db.DB.Close()
 
@@ -34,7 +39,14 @@ func main() {
 	mux.HandleFunc("/buildings", handlers.GetBuildings)
 	mux.HandleFunc("/classrooms", handlers.GetClassrooms)
 	mux.HandleFunc("/lessons", handlers.GetLessons)
-	mux.HandleFunc("/presentations", handlers.HandlePresentations)
+
+	mux.HandleFunc("/login", handlers.TeacherLogin)
+	mux.Handle(
+		"/register",
+		middleware.AuthMiddleware(http.HandlerFunc(handlers.RegisterTeacher)))
+	mux.Handle(
+		"/presentations",
+		middleware.AuthMiddleware(http.HandlerFunc(handlers.HandlePresentations)))
 
 	// обгортаємо middleware
 	handler := corsMiddleware(mux)
