@@ -91,9 +91,9 @@ export default defineComponent({
             try {
                 const res = await uploadFile({
                     email: this.email,
-                    description: this.description,   // ✅ відповідність Go-полю
-                    lesson_id: this.selectedLesson?.id.toString(),          // ✅ snake_case
-                    classroom_id: this.selectedClassroom?.id.toString(),    // ✅ snake_case
+                    description: this.description,
+                    lesson_id: this.selectedLesson?.id.toString(),
+                    classroom_id: this.selectedClassroom?.id.toString(),
                     file: this.files[0],
                 });
                 console.log("Upload success:", res.data);
@@ -103,7 +103,7 @@ export default defineComponent({
                 });
             } catch (err) {
                 console.error("Upload error:", err);
-                alert("Failed to submit file.");
+                alert("Failed to submit file ❌\n\nPlease try again later.");
             }
         },
     },
