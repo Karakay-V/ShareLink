@@ -48,10 +48,18 @@ func main() {
 		"/register",
 		middleware.AuthMiddleware(http.HandlerFunc(handlers.RegisterTeacher)))
 
-	mux.Handle("/presentations", http.RedirectHandler("/presentations/", http.StatusMovedPermanently))
 	mux.Handle(
-		"/presentations/",
-		middleware.AuthMiddleware(http.HandlerFunc(handlers.HandlePresentations)))
+		"/presentations", 
+		http.RedirectHandler("/presentations/", http.StatusMovedPermanently))
+	mux.Handle("/presentations/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			// POST без авторизації
+			handlers.HandlePresentations(w, r)
+		} else {
+			// решта методів — з авторизацією
+			middleware.AuthMiddleware(http.HandlerFunc(handlers.HandlePresentations)).ServeHTTP(w, r)
+		}
+	}))
 
 	// обгортаємо middleware
 	handler := corsMiddleware(mux)
