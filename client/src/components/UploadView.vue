@@ -17,12 +17,12 @@
                         placeholder="andrii@example.com"
                         :required="true" />
             
-            <TextInput  v-model:data="signature"
+            <TextInput  v-model:data="description"
                         :type="InputDataTypes.Text"
-                        placeholder="Signature (e.g., Andrii, Mykola BIP2-22)"
+                        placeholder="Description (e.g., Andrii, Mykola BIP2-22)"
                         :required="true" />
 
-            <DragAndDropArea />
+            <DragAndDropArea v-model:files="files" />
             
             <Button label="Submit File"
                     class="internal-button"
@@ -33,22 +33,24 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref, onMounted, computed } from 'vue';
 import Section from './UI/Section.vue';
 import DragAndDropArea from './UI/DragAndDropArea.vue';
 import Button from './UI/Button.vue';
 import TextInput from './UI/TextInput.vue';
 import { InputDataTypes } from '../types/input-data-types';
 import { uploadFile } from "../services/upload-service";
+import { getClassrooms, type Classroom } from '../services/classrooms-service';
+import { getLessons, type Lesson } from '../services/lessons-service';
 
 export default defineComponent({
     name: "UploadView",
     data() {
         return({
             InputDataTypes,
-            email: '',
-            signature: '',
-            file: null as File | null,
+            email: ref(''),
+            description: ref(''),
+            files: [] as File[],
         });
     },
     props: {
@@ -63,21 +65,72 @@ export default defineComponent({
     },
     methods: {
         async handleSubmit() {
-        try {
-            const res = await uploadFile({
-                email: this.email,
-                signature: this.signature,
-                lesson: this.lesson,
-                classroom: this.classroom,
-                file: this.file ?? undefined,
-            });
-            console.log("Upload success:", res.data);
-            alert("File submitted successfully!");
-        } catch (err) {
-            console.error("Upload error:", err);
-            alert("Failed to submit file.");
-        }
+            console.log(this.files[0]);
+            if (!this.files[0]) {
+                alert("Please select a file before submitting.");
+                return;
+            }
+
+              if (!this.selectedLesson || !this.selectedClassroom) {
+                alert("Invalid classroom or lesson.");
+                return;
+            }
+
+            try {
+                const res = await uploadFile({
+                    email: this.email,
+                    description: this.description,   // ✅ відповідність Go-полю
+                    lesson_id: this.selectedLesson?.id.toString(),          // ✅ snake_case
+                    classroom_id: this.selectedClassroom?.id.toString(),    // ✅ snake_case
+                    file: this.files[0],
+                });
+                console.log("Upload success:", res.data);
+                alert("File submitted successfully!");
+            } catch (err) {
+                console.error("Upload error:", err);
+                alert("Failed to submit file.");
+            }
         },
+    },
+    setup(props) {
+        const classrooms = ref<Classroom[]>([]);
+        const lessons = ref<Lesson[]>([]);
+
+        const selectedClassroom = computed(() =>
+            classrooms.value.find(c => String(c.name) === props.classroom)
+        );
+
+        const selectedLesson = computed(() =>
+            lessons.value.find(l => String(l.pair_number) === props.lesson)
+        );
+
+        onMounted(async () => {
+            classrooms.value = await fetchWithCache<Classroom>('classrooms', getClassrooms);
+            lessons.value = await fetchWithCache<Lesson>('lessons', getLessons);
+        });
+
+        async function fetchWithCache<T>(key: string, apiFn: () => Promise<T[]>): Promise<T[]> {
+            const localData = localStorage.getItem(key);
+            if (localData) {
+                return JSON.parse(localData) as T[];
+            } else {
+                try {
+                    const data = await apiFn();
+                    localStorage.setItem(key, JSON.stringify(data));
+                    return data;
+                } catch (error) {
+                    console.error(`Failed to fetch ${key}`, error);
+                    return [];
+                }
+            }
+        };
+
+        return {
+            classrooms,
+            lessons,
+            selectedClassroom,
+            selectedLesson
+        };
     },
     components: {
         Section,

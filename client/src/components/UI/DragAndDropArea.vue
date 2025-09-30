@@ -59,12 +59,16 @@ export default defineComponent({
     data() {
         return {
             isDragging: false,
-            files: [] as File[],
             FilePic,
             ClosePic,
         };
     },
     props: {
+        files: {
+            type: Array as () => File[],
+            required: false,
+            default: () => [],
+        },
         width: {
             type: String,
             required: false,
@@ -76,14 +80,15 @@ export default defineComponent({
             default: "max-content",
         },
     },
+    emits: ["update:files"],
     methods: {
         onChange() {
-           const input = this.$refs.file as HTMLInputElement;
-          if (input && input.files) {
-              const selected = Array.from(input.files);
-              this.files = [...this.files, ...selected].slice(0, 5);
-              input.value = "";
-          }
+            const input = this.$refs.file as HTMLInputElement;
+            if (input && input.files) {
+                const selected = Array.from(input.files);
+                this.$emit("update:files", [...this.files, ...selected].slice(0, 5));
+                input.value = "";
+            }
         },
         dragover(_event: DragEvent) {
             _event.preventDefault();
@@ -96,18 +101,19 @@ export default defineComponent({
             _event.preventDefault();
             if (_event.dataTransfer?.files) {
                 const dropped = Array.from(_event.dataTransfer.files);
-                this.files = [...this.files, ...dropped].slice(0, 5);
+                this.$emit("update:files", [...this.files, ...dropped].slice(0, 5));
             }
             this.isDragging = false;
         },
         removeFile(index: number) {
-            this.files.splice(index, 1);
+            const newFiles = [...this.files];
+            newFiles.splice(index, 1);
+            this.$emit("update:files", newFiles);
             const input = this.$refs.file as HTMLInputElement;
-            if (input) input.value = ""; // clear input value
+            if (input) input.value = "";
         },
         openFileDialog() {
-            const input = this.$refs.file as HTMLInputElement;
-            input?.click();
+            (this.$refs.file as HTMLInputElement)?.click();
         },
     },
 });

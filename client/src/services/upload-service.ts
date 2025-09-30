@@ -2,11 +2,11 @@
 import api from "./api";
 
 export interface PresentationUploadPayload {
-    title: string;
+    lesson_id: string;     // саме snake_case як у Go
+    classroom_id: string;  // те саме
+    email: string;
     description: string;
-    lessonId: string;
-    classroomId: string;
-    file: File; // файл тепер обов’язковий
+    file: File;
 }
 
 export interface Presentation {
@@ -22,13 +22,13 @@ export interface Presentation {
 
 export async function uploadFile(data: PresentationUploadPayload) {
     const formData = new FormData();
-    formData.append("title", data.title);
+    formData.append("lesson_id", data.lesson_id);
+    formData.append("classroom_id", data.classroom_id);
+    formData.append("email", data.email);
     formData.append("description", data.description);
-    formData.append("lessonId", data.lessonId);
-    formData.append("classroomId", data.classroomId);
     formData.append("file", data.file);
 
-    return api.post<Presentation>("/presentations", formData, {
+    return api.post("/presentations/", formData, {
         headers: { "Content-Type": "multipart/form-data" },
     });
 }
