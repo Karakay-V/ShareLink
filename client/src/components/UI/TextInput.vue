@@ -172,7 +172,7 @@
       border: 2px solid transparent;
       @include noto-font(400);
       @include shadows.box-shadow-medium;
-      @include responsive-font(15, 13, 1440);
+      @include responsive-font(16, 16, 1440);
       transition: 0.3s ease background-color, 0.3s ease box-shadow, 0.3s ease color, 0.3s ease border-color;
       background-color: $background-white;
       color: $text-black;
@@ -196,7 +196,7 @@
     .floating_label {
       position: absolute;
       left: 15px;
-      top: 12px;
+      top: 15px;
       color: $text-placeholder-gray;
       opacity: 1;
       transition: 0.3s ease opacity, 0.3s ease color;

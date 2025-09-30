@@ -24,6 +24,7 @@ export default defineComponent({
     @include shadows.box-shadow-medium;
 
     width: 100%;
+    max-width: 500px;
     padding: 24px;
     display: flex;
     gap: 16px 30px;

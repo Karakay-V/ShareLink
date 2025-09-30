@@ -66,7 +66,7 @@ export default defineComponent({
 
     .label {
         @include fonts.noto-font(600);
-        @include fonts.responsive-font(14, 14, 1440);
+        @include fonts.responsive-font(16, 16, 1440);
         @include fonts.prevent-selecting;
         transition: 0.3s ease color;
         text-align: center;

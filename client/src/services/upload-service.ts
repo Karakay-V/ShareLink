@@ -1,26 +1,34 @@
 // src/services/upload-service.ts
 import api from "./api";
 
-export interface UploadPayload {
-    email: string;
-    signature: string;
-    lesson: string;
-    classroom: string;
-    file?: File;
+export interface PresentationUploadPayload {
+    title: string;
+    description: string;
+    lessonId: string;
+    classroomId: string;
+    file: File; // файл тепер обов’язковий
 }
 
-export async function uploadFile(data: UploadPayload) {
+export interface Presentation {
+    id: string;
+    title: string;
+    description: string;
+    fileUrl: string;
+    lessonId: string;
+    classroomId: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export async function uploadFile(data: PresentationUploadPayload) {
     const formData = new FormData();
-    formData.append("email", data.email);
-    formData.append("signature", data.signature);
-    formData.append("lesson", data.lesson);
-    formData.append("classroom", data.classroom);
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("lessonId", data.lessonId);
+    formData.append("classroomId", data.classroomId);
+    formData.append("file", data.file);
 
-    if (data.file) {
-        formData.append("file", data.file);
-    }
-
-    return api.post("/presentations", formData, {
+    return api.post<Presentation>("/presentations", formData, {
         headers: { "Content-Type": "multipart/form-data" },
     });
 }

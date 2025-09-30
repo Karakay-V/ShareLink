@@ -1,21 +1,26 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import UploadView from '../components/UploadView.vue'
-import SearchView from '../components/SearchView.vue'
 import ResultsView from '../components/ResultsView.vue'
+import SelectView from '../components/SelectView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'search',
-    component: SearchView,
+    name: 'select',
+    component: SelectView,
+    props: route => ({
+        building: route.query.building,
+        lesson: route.query.lesson,
+        classroom: route.query.classroom,
+    }),
   },
   {
     path: '/search',
     name: 'result',
     component: ResultsView,
     props: route => ({
-        lessonId: route.query.lesson,
+        lesson: route.query.lesson,
         classroom: route.query.classroom,
     }),
   },

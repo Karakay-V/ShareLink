@@ -65,11 +65,11 @@ export default defineComponent({
         async handleSubmit() {
         try {
             const res = await uploadFile({
-            email: this.email,
-            signature: this.signature,
-            lesson: this.lesson,
-            classroom: this.classroom,
-            file: this.file ?? undefined,
+                email: this.email,
+                signature: this.signature,
+                lesson: this.lesson,
+                classroom: this.classroom,
+                file: this.file ?? undefined,
             });
             console.log("Upload success:", res.data);
             alert("File submitted successfully!");
@@ -105,6 +105,8 @@ export default defineComponent({
 }
 
 .info-container {
+    max-width: 500px;
+    
     h2, p {
         margin: 0;
         padding: 0;

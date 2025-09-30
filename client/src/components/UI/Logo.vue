@@ -47,6 +47,7 @@ export default defineComponent({
     gap: 8px;
     width: max-content;
     height: max-content;
+    cursor: pointer;
 
     .logo-img-wrapper {
         width: 20px;
