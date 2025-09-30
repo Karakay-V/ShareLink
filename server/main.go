@@ -47,8 +47,10 @@ func main() {
 	mux.Handle(
 		"/register",
 		middleware.AuthMiddleware(http.HandlerFunc(handlers.RegisterTeacher)))
+
+	mux.Handle("/presentations", http.RedirectHandler("/presentations/", http.StatusMovedPermanently))
 	mux.Handle(
-		"/presentations",
+		"/presentations/",
 		middleware.AuthMiddleware(http.HandlerFunc(handlers.HandlePresentations)))
 
 	// обгортаємо middleware
