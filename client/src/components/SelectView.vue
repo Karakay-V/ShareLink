@@ -72,7 +72,14 @@ export default defineComponent({
         Select,
         Button,
     },
-    setup() {
+    props: {
+        classroomProp: {
+            type: String,
+            required: false,
+            default: '',
+        },
+    },
+    setup(props) {
         const router = useRouter();
 
         const CoverImageRef = ref(CoverImage);
@@ -88,6 +95,13 @@ export default defineComponent({
             buildings.value = await fetchWithCache<Building>('buildings', getBuildings);
             classrooms.value = await fetchWithCache<Classroom>('classrooms', getClassrooms);
             lessons.value = await fetchWithCache<Lesson>('lessons', getLessons);
+
+            if (props.classroomProp !== '') {
+                const found = classrooms.value.find(c => c.name === props.classroomProp);
+                if (found) {
+                    selectedClassroom.value = found.name;
+                }
+            }
         });
 
         async function fetchWithCache<T>(key: string, apiFn: () => Promise<T[]>): Promise<T[]> {
@@ -111,8 +125,6 @@ export default defineComponent({
         );
 
         const handleNext = () => {
-            console.log({ building: selectedBuilding.value, classroom: selectedClassroom.value, lesson: selectedLesson.value, });
-
             if (!selectedClassroom.value || !selectedLesson.value) {
                 alert("Please select all fields!");
                 return;

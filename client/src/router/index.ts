@@ -10,9 +10,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'select',
     component: SelectView,
     props: route => ({
-        building: route.query.building,
-        lesson: route.query.lesson,
-        classroom: route.query.classroom,
+        classroomProp: route.query.classroom,
     }),
   },
   {
