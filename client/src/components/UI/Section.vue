@@ -1,5 +1,6 @@
 <template>
-    <div class="wrapper">
+    <div class="wrapper"
+        :style="{ width: width, maxWidth: maxWidth, }">
         <slot />
     </div>
 </template>
@@ -9,6 +10,18 @@ import { defineComponent } from 'vue';
 
 export default defineComponent({
     name: "Section",
+    props: {
+        width: {
+            type: String,
+            required: false,
+            default: '100%',
+        },
+        maxWidth: {
+            type: String,
+            required: false,
+            default: '500px',
+        },
+    }
 });
 </script>
 
@@ -23,8 +36,6 @@ export default defineComponent({
     border-radius: 20px;
     @include shadows.box-shadow-medium;
 
-    width: 100%;
-    max-width: 500px;
     padding: 24px;
     display: flex;
     gap: 16px 30px;

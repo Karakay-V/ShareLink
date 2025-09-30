@@ -124,6 +124,12 @@
                 return false;
               }
               break;
+            case "password":
+              if (!value.trim() && this.required == true) {
+                this.errorMessage = "This field cannot be empty";
+                return false;
+              }
+              break;
           }
         }
 

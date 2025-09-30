@@ -1,28 +1,6 @@
 <template>
-    <div class="view-wrapper">
-        <div class="info-container">
-            <h2 class="title">
-                Easily share your study materials with classmates
-            </h2>
-
-            <div class="quired_info">
-               <img class="image" :src="CoverImage" alt="Easily share your study materials with classmates" />
-            </div>
-        </div>
-
+    <div class="files-inner">
         <Section>
-            
-            <!-- <div class="select-wrapper">
-                <label for="select_buildings" class="select-label">
-                    Building (Corpus)
-                </label>
-                <Select v-model="selectedBuilding"
-                        :items="buildings.map(b => b.name)"
-                        labelKey="select_buildings"
-                        valueKey="id"
-                        placeholder="Building ..." />
-            </div> -->
-
             <div class="select-wrapper">
                 <label for="select_classrooms" class="select-label">
                     Classroom (Auditorium)
@@ -46,54 +24,80 @@
                         placeholder="Lesson ..." />
             </div>
             
-            <Button label="Next"
+            <Button label="Show Presentations"
                     class="internal-button"
                     @click="handleNext" />
 
+        </Section>
+
+        <Section maxWidth="100%" >
+            
+            <div v-if="presentations.length > 0" class="list-wrapper">
+                <File   v-for="p in presentations"
+                        :key="p.id"
+                        :name="p.file_name"
+                        :description="p.description"
+                        @click="handleDownload(p.file_id)" />
+            </div>
+
+
+            <div v-else class="heading-wrapper">
+                <h2 class="heading-text">
+                    <span class="heading-bold">Empty.</span>
+                    <br/>
+                    Not found any uploaded presentations for this Lesson.
+                </h2>
+            </div>
+        
         </Section>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, computed } from 'vue';
+import { defineComponent, onMounted, ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import Section from './UI/Section.vue';
-import Button from './UI/Button.vue';
-import Select from './UI/Select.vue';
-import CoverImage from '../assets/covers/cover-image.png';
-import { getBuildings, type Building } from '../services/buildings-service';
-import { getClassrooms, type Classroom } from '../services/classrooms-service';
-import { getLessons, type Lesson } from '../services/lessons-service';
-import { fetchWithCache } from '../services/selects-service';
+import { checkAuth } from '../../services/auth/check';
+import Section from '../UI/Section.vue';
+import Button from '../UI/Button.vue';
+import Select from '../UI/Select.vue';
+import File from '../UI/File.vue';
+import { getClassrooms, type Classroom } from '../../services/classrooms-service';
+import { getLessons, type Lesson } from '../../services/lessons-service';
+import { fetchWithCache } from '../../services/selects-service';
+import { getPresentationsByLesson, downloadPresentation, type Presentation } from '../../services/auth/presentations-service';
 
 export default defineComponent({
-    name: "SelectView",
+    name: "FilesView",
     components: {
         Section,
         Select,
         Button,
+        File,
     },
     props: {
         classroomProp: {
             type: String,
             required: false,
             default: '',
-        },
+        }
     },
     setup(props) {
         const router = useRouter();
 
-        const CoverImageRef = ref(CoverImage);
-        const selectedBuilding = ref<string | null>(null);
         const selectedClassroom = ref<string | null>(null);
         const selectedLesson = ref<string | null>(null);
 
-        const buildings = ref<Building[]>([]);
         const classrooms = ref<Classroom[]>([]);
         const lessons = ref<Lesson[]>([]);
 
+        const presentations = ref<Presentation[]>([]);
+
         onMounted(async () => {
-            buildings.value = await fetchWithCache<Building>('buildings', getBuildings);
+            const isValid = await checkAuth();
+            if (!isValid) {
+                router.push({ name: "auth" });
+            }
+
             classrooms.value = await fetchWithCache<Classroom>('classrooms', getClassrooms);
             lessons.value = await fetchWithCache<Lesson>('lessons', getLessons);
 
@@ -104,39 +108,41 @@ export default defineComponent({
                 }
             }
         });
-        
+
         const lessonLabels = computed(() =>
             lessons.value.map(l => `${l.pair_number} (${l.start_time} - ${l.end_time})`)
         );
 
-        const handleNext = () => {
+        const handleNext = async () => {
             if (!selectedClassroom.value || !selectedLesson.value) {
                 alert("Please select all fields!");
                 return;
             }
 
-            // редірект з параметрами
-            router.push({
-                name: 'lesson', // <- ім’я маршруту, не шлях
-                params: {
-                    lessonId: selectedLesson.value.trim().charAt(0),
-                },
-                query: {
-                    classroom: selectedClassroom.value,
-                }
-            });
+            const pairNumber = selectedLesson.value.trim().charAt(0);
+
+            presentations.value = await getPresentationsByLesson(pairNumber, selectedClassroom.value);
+        };
+
+        const handleDownload = async (file_id: number) => {
+            try {
+                await downloadPresentation(file_id); // сервіс вже завантажує файл
+                console.log(`File ${file_id} downloaded successfully`);
+            } catch (err) {
+                console.error(`Failed to download file ${file_id}:`, err);
+                alert("Failed to download file ❌");
+            }
         };
 
         return {
-            CoverImage: CoverImageRef,
-            selectedBuilding,
             selectedClassroom,
             selectedLesson,
-            buildings,
             classrooms,
             lessons,
             lessonLabels,
             handleNext,
+            handleDownload,
+            presentations,
         };
     },
 });
@@ -148,39 +154,18 @@ export default defineComponent({
 @use "/src/assets/styles/fonts";
 @use "/src/assets/styles/shadows";
 
-
-.view-wrapper {
-    margin: 33px;
+.files-inner {
+    width: calc(100% - 30px - 30px);
+    padding: 30px;
+    gap: 30px;
     display: flex;
-    gap: 20px;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: space-between;
-    align-items: center;
-}
+    align-items: flex-start;
 
-.info-container {
-    max-width: 500px;
-
-    h2, p {
-        margin: 0;
-        padding: 0;
-    }
-
-    .title {
-        @include fonts.noto-font(500);
-        @include fonts.responsive-font(24, 20, 1440);
-        text-align: center;
-    }
-
-    .quired_info {
-        margin-top: 20px;
+    @media (max-width: 900px) {
+        flex-wrap: wrap;
         justify-content: center;
-        align-items: center;
-        width: 100%;
-
-        .image {
-            width: 100%;
-        }
     }
 }
 
@@ -201,5 +186,29 @@ export default defineComponent({
 
 .internal-button {
     margin-top: 10px;
+}
+
+.list-wrapper {
+    width: 100%;
+    display: flex;
+    gap: 20px 10px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.heading-wrapper {
+    padding: 70px 20px;
+
+    .heading-text {
+        text-align: center;
+        @include fonts.noto-font(500);
+        @include fonts.responsive-font(20, 18, 1440);
+        
+        .heading-bold {
+            @include fonts.noto-font(800);
+            @include fonts.responsive-font(24, 20, 1440);
+        }
+    }
 }
 </style>

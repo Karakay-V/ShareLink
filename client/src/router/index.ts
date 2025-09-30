@@ -3,6 +3,8 @@ import type { RouteRecordRaw } from 'vue-router'
 import UploadView from '../components/UploadView.vue'
 import ResultsView from '../components/ResultsView.vue'
 import SelectView from '../components/SelectView.vue'
+import AuthView from '../components/Admin/AuthView.vue'
+import FilesView from '../components/Admin/FilesView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -29,6 +31,19 @@ const routes: Array<RouteRecordRaw> = [
     props: route => ({
         lesson: route.params.lessonId,
         classroom: route.query.classroom,
+    }),
+  },
+  {
+    path: '/auth',
+    name: 'auth',
+    component: AuthView,
+  },
+  {
+    path: '/files',
+    name: 'files',
+    component: FilesView,
+    props: route => ({
+        classroomProp: route.query.classroom,
     }),
   },
   {

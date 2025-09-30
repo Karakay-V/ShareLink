@@ -77,7 +77,6 @@ export default defineComponent({
     },
     methods: {
         async handleSubmit() {
-            console.log(this.files[0]);
             if (!this.files[0]) {
                 alert("Please select a file before submitting.");
                 return;
@@ -217,7 +216,7 @@ export default defineComponent({
 
     .input-label {
         @include fonts.noto-font(500);
-        @include fonts.responsive-font(16, 14, 1440);
+        @include fonts.responsive-font(16, 16, 1440);
         text-align: start;
     }
 }

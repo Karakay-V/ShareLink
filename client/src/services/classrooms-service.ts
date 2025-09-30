@@ -1,3 +1,4 @@
+// src/services/classrooms-service.ts
 import api from "./api";
 
 export interface Classroom {

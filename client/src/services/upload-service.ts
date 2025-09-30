@@ -9,17 +9,6 @@ export interface PresentationUploadPayload {
     file: File;
 }
 
-export interface Presentation {
-    id: string;
-    title: string;
-    description: string;
-    fileUrl: string;
-    lessonId: string;
-    classroomId: string;
-    createdAt: string;
-    updatedAt: string;
-}
-
 export async function uploadFile(data: PresentationUploadPayload) {
     const formData = new FormData();
     formData.append("lesson_id", data.lesson_id);
