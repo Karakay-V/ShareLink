@@ -1,5 +1,6 @@
 <template>
-    <div class="logo-container">
+    <div class="logo-container"
+        @click="toMain">
         <div class="logo-img-wrapper">
             <img class="logo-img" :src="img" alt="ShareLink" />
         </div>
@@ -10,6 +11,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { useRouter } from 'vue-router';
 import LogoPic from '../../assets/logo.png';
 
 export default defineComponent({
@@ -30,6 +32,17 @@ export default defineComponent({
             required: false,
             default: "ShareLink"
         },
+    },
+    setup() {
+        const router = useRouter();        
+        
+        const toMain = () => {
+            router.push({
+                name: 'select',
+            });
+        };
+
+        return { toMain };
     },
 });
 </script>

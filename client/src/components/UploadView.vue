@@ -7,20 +7,31 @@
 
             <div class="quired_info">
                 <p class="classroom">Classroom: {{ classroom }}</p>
-                <p class="lesson">Lesson: {{ lesson }}</p>
+                <p class="lesson">Lesson: {{ lesson }} ({{ selectedLesson?.start_time }} - {{ selectedLesson?.end_time }})</p>
             </div>
         </div>
 
         <Section>
-            <TextInput  v-model:data="email" 
-                        :type="InputDataTypes.Email"
-                        placeholder="andrii@example.com"
-                        :required="true" />
+            <div class="input-wrapper">
+                <label class="input-label">
+                    Leave your email address
+                </label>
+                <TextInput  v-model:data="email" 
+                            :type="InputDataTypes.Email"
+                            placeholder="andrii@example.com"
+                            :required="true" />
+            </div>
+
+            <div class="input-wrapper">
+                <label class="input-label">
+                    And message for your teacher
+                </label>
             
-            <TextInput  v-model:data="description"
-                        :type="InputDataTypes.Text"
-                        placeholder="Description (e.g., Andrii, Mykola BIP2-22)"
-                        :required="true" />
+                <TextInput  v-model:data="description"
+                            :type="InputDataTypes.Text"
+                            placeholder="Description (e.g., Andrii, Mykola BIP2-22)"
+                            :required="true" />
+            </div>
 
             <DragAndDropArea v-model:files="files" />
             
@@ -34,6 +45,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import Section from './UI/Section.vue';
 import DragAndDropArea from './UI/DragAndDropArea.vue';
 import Button from './UI/Button.vue';
@@ -85,7 +97,10 @@ export default defineComponent({
                     file: this.files[0],
                 });
                 console.log("Upload success:", res.data);
-                alert("File submitted successfully!");
+                alert("File submitted successfully ✅\n\nThe teacher will have access to them during lesson.");
+                this.router.push({
+                    name: 'select',
+                });
             } catch (err) {
                 console.error("Upload error:", err);
                 alert("Failed to submit file.");
@@ -93,6 +108,8 @@ export default defineComponent({
         },
     },
     setup(props) {
+        const router = useRouter();
+        
         const classrooms = ref<Classroom[]>([]);
         const lessons = ref<Lesson[]>([]);
 
@@ -126,6 +143,7 @@ export default defineComponent({
         };
 
         return {
+            router,
             classrooms,
             lessons,
             selectedClassroom,
@@ -187,5 +205,20 @@ export default defineComponent({
 
 .internal-button {
     margin-top: 10px;
+}
+
+.input-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    .input-label {
+        @include fonts.noto-font(500);
+        @include fonts.responsive-font(16, 14, 1440);
+        text-align: start;
+    }
 }
 </style>
