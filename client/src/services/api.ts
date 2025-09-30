@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "https://sharelink-p3z9.onrender.com", // можна задати через .env
+  baseURL: import.meta.env.VITE_API_URL || "http://127.0.0.1:8002", // можна задати через .env
   headers: {
     "Content-Type": "application/json",
   },
