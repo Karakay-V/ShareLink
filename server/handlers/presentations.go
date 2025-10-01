@@ -26,6 +26,7 @@ type Presentation struct {
 	Description   string `json:"description"`
 	FileID        int    `json:"file_id"`   // 🔑 id файлу
 	FileName      string `json:"file_name"` // 🔑 замість file_path
+	FileExt       string `json:"file_extension"`
 	UploadedAt    string `json:"uploaded_at"`
 	IsOutdated    bool   `json:"is_outdated"`
 }
@@ -60,7 +61,7 @@ func getAllPresentations(w http.ResponseWriter, r *http.Request) {
 	showHidden := r.URL.Query().Get("show_hidden") == "true"
 
 	query := `
-		SELECT p.id, l.pair_number, c.name, p.email, p.description, p.file_id, f.name, p.uploaded_at, p.is_outdated
+		SELECT p.id, l.pair_number, c.name, p.email, p.description, p.file_id, f.name, f.file_extension, p.uploaded_at, p.is_outdated
 		FROM presentations p
 		JOIN lessons l ON p.lesson_id = l.id
 		JOIN classrooms c ON p.classroom_id = c.id
@@ -80,7 +81,7 @@ func getAllPresentations(w http.ResponseWriter, r *http.Request) {
 	var pres []Presentation
 	for rows.Next() {
 		var p Presentation
-		rows.Scan(&p.ID, &p.PairNumber, &p.ClassroomName, &p.Email, &p.Description, &p.FileID, &p.FileName, &p.UploadedAt, &p.IsOutdated)
+		rows.Scan(&p.ID, &p.PairNumber, &p.ClassroomName, &p.Email, &p.Description, &p.FileID, &p.FileName, &p.FileExt, &p.UploadedAt, &p.IsOutdated)
 		pres = append(pres, p)
 	}
 	json.NewEncoder(w).Encode(pres)
@@ -101,7 +102,7 @@ func getByLesson(w http.ResponseWriter, r *http.Request) {
 	}
 
 	query := `
-		SELECT p.id, l.pair_number, c.name, p.email, p.description, p.file_id, f.name, p.uploaded_at, p.is_outdated
+		SELECT p.id, l.pair_number, c.name, p.email, p.description, p.file_id, f.name, f.file_extension, p.uploaded_at, p.is_outdated
 		FROM presentations p
 		JOIN lessons l ON p.lesson_id = l.id
 		JOIN classrooms c ON p.classroom_id = c.id
@@ -119,7 +120,7 @@ func getByLesson(w http.ResponseWriter, r *http.Request) {
 	var pres []Presentation
 	for rows.Next() {
 		var p Presentation
-		rows.Scan(&p.ID, &p.PairNumber, &p.ClassroomName, &p.Email, &p.Description, &p.FileID, &p.FileName, &p.UploadedAt, &p.IsOutdated)
+		rows.Scan(&p.ID, &p.PairNumber, &p.ClassroomName, &p.Email, &p.Description, &p.FileID, &p.FileName, &p.FileExt, &p.UploadedAt, &p.IsOutdated)
 		if !p.IsOutdated {
 			pres = append(pres, p)
 		}

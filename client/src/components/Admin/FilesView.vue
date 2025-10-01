@@ -37,7 +37,7 @@
                         :key="p.id"
                         :name="p.file_name"
                         :description="p.description"
-                        @click="handleDownload(p.file_id)" />
+                        @click="handleDownload(p.file_id, p.file_name)" />
             </div>
 
 
@@ -124,9 +124,9 @@ export default defineComponent({
             presentations.value = await getPresentationsByLesson(pairNumber, selectedClassroom.value);
         };
 
-        const handleDownload = async (file_id: number) => {
+        const handleDownload = async (file_id: number, file_name: string, file_extension?: string) => {
             try {
-                await downloadPresentation(file_id); // сервіс вже завантажує файл
+                await downloadPresentation(file_id, file_name, file_extension); // сервіс вже завантажує файл
                 console.log(`File ${file_id} downloaded successfully`);
             } catch (err) {
                 console.error(`Failed to download file ${file_id}:`, err);

@@ -9,6 +9,7 @@ export interface Presentation {
     description: string;
     file_id: number;
     file_name: string;
+    file_extension: string,
     uploaded_at: string;
     is_outdated: boolean;
 }
@@ -34,17 +35,23 @@ export async function getPresentationsByLesson(
 }
 
 // ==================== DOWNLOAD ====================
-export async function downloadPresentation(fileId: number) {
+export async function downloadPresentation(fileId: number, fileName?: string, fileExt?: string) {
     const res = await api.get(`/presentations/download/${fileId}`, {
         responseType: "blob",
     });
+
+    // Формуємо повну назву файлу
+    let fullName = `file_${fileId}`;
+    if (fileName) fullName = fileName;
+    if (fileExt) fullName += `.${fileExt}`;
 
     // Автоматично зберігаємо файл у браузері
     const url = window.URL.createObjectURL(res.data);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `file_${fileId}`);
+    link.setAttribute("download", fullName);
     document.body.appendChild(link);
     link.click();
     link.remove();
 }
+
