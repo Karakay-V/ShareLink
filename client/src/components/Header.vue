@@ -52,6 +52,7 @@ export default defineComponent({
     justify-content: space-between;
     align-items: center;
     padding: 0 20px 0 15px;
+    z-index: 10;
 }
 
 </style>

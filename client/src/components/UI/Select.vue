@@ -303,7 +303,7 @@ export default defineComponent({
     border-radius: 10px;
     padding: 8px;
     box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-    z-index: 400;
+    z-index: 4;
 
     .option {
       padding: 10px 12px;
